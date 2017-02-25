@@ -1,0 +1,42 @@
+body {
+    font-family: 'Lato', sans-serif;
+    text-align: center;
+}
+
+.level {
+    background-color: #303F9F;
+    border: none;
+    color: white;
+    width: 25%;
+    height: 10%;
+    text-align: center;
+    display: inline-block;
+    font-size: 24px;
+    margin: 10px 4px;
+    cursor: default;
+}
+
+.level:hover {
+    background-color: #3F51B5
+}
+
+.game {
+    background-color: #303F9F;
+    border: none;
+    width: 12%;
+    height: 12%;
+    color: white;
+    text-align: center;
+    display: inline-block;
+    font-size: 24px;
+    margin: 4px 4px;
+    cursor: pointer;
+}
+
+.game:hover {
+    background-color: #3F51B5
+}
+
+#caution {
+    color: #ff0000
+}

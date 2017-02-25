@@ -1,0 +1,159 @@
+<!DOCTYPE>
+<html>
+
+<head>
+    <title> This is title </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<script>
+    var game, time, second = 0,
+        counter, myInterval, current, correct = 0
+    $(document).ready(function() {
+        $("#game").hide(),
+            $("button").click(function() {
+                $("#main").hide()
+                $("#game").show()
+                startGame(this.id)
+                document.getElementById("time").innerHTML = "Mode : " + this.id
+            }),
+            $("#game").on('click', '.game', function() {
+                if (game[this.id] == current) {
+                    document.getElementById(game.indexOf(current)).value = 1
+                    document.getElementById(game.indexOf(current)).innerHTML = current
+                    correct++
+                    if (correct != game.length) {
+                        randomNumber()
+                    } else {
+                        endgame()
+                    }
+                } else {
+                    document.getElementById("caution").innerHTML = "You missed , your time is dicreased by 5 second"
+                    setTimeout(function() {
+                        document.getElementById("caution").innerHTML = ""
+                    }, 800)
+                    if (second > 5) {
+                        second -= 5
+                    } else if (minute > 0) {
+                        minute--
+                        second = 54
+                    } else {
+                        second = 0
+                    }
+                    document.getElementById("time").innerHTML = second < 10 ? "Game will be end in " + minute + ":0" + second : "Game will be end in " + minute + ":" + second
+                    clearInterval(myInterval)
+                    timecount()
+                }
+            })
+    })
+
+    function startGame(level) {
+        $.getJSON(level + ".json", function(result) {
+            var json = JSON.parse(result)
+            var i = Math.floor(Math.random() * json["numberGame"])
+            game = json["game"][i]
+            minute = json["time"]
+            counter = json["timetoremember"]
+            for (j = 0; j < game.length; j++) {
+                $("#game").append("<button class='game' value='0' id='" + j + "' disabled> ? </button>")
+                if ((j + 1) % json['size'] == 0)
+                    $("#game").append("<br>")
+            }
+            var k = 3
+            myInterval = setInterval(function() {
+                document.getElementById("time").innerHTML = "Game starting in " + k + " seconds"
+                k--
+                if (k < 0) {
+                    remember()
+                }
+            }, 1000)
+        })
+    }
+
+    function remember() {
+        openclose()
+        myInterval = setInterval(function() {
+            document.getElementById("time").innerHTML = "This set will close in  " + counter + " seconds"
+            counter--
+            if (counter < 0) {
+                document.getElementById("time").innerHTML = "Let's fun"
+                openclose("?")
+                randomNumber()
+                timecount()
+            }
+        }, 1000)
+    }
+
+    function timecount() {
+        var text = second < 10 ? minute + ":0" + second : minute + ":" + second
+        myInterval = setInterval(function() {
+            document.getElementById("time").innerHTML = "Game will be end in " + text
+            if (second > 0) {
+                second--
+            } else if (minute > 0) {
+                minute--
+                second = 59
+            }
+            text = second < 10 ? minute + ":0" + second : minute + ":" + second
+            if (second <= 0 && minute == 0) {
+                endgame()
+            }
+        }, 1000)
+    }
+
+    function openclose(text) {
+        clearInterval(myInterval)
+        for (j = 0; j < game.length; j++) {
+            document.getElementById(j).innerHTML = text !== undefined ? text : game[j]
+            if (text !== undefined) {
+                document.getElementById(j).removeAttribute("disabled")
+            }
+        }
+    }
+
+    function endgame() {
+        clearInterval(myInterval)
+        var win = true
+        for (j = 0; j < game.length; j++) {
+            if (document.getElementById(j).value == 0) {
+                win = false
+            }
+            $("#" + j).remove()
+        }
+        document.getElementById("time").innerHTML = win == true ? "You win" : "You lose"
+        document.getElementById("number").innerHTML = "Main menu is available immidiately"
+        setTimeout(function() {
+            $("#game").hide()
+            $("#main").show()
+        }, 2000)
+    }
+
+    function randomNumber() {
+        while (true) {
+            random = Math.floor(Math.random() * game.length) + 1
+            if (document.getElementById(game.indexOf(random)).value == 0) {
+                document.getElementById("number").innerHTML = "next number is " + random
+                current = random
+                break
+            }
+        }
+    }
+</script>
+
+<body>
+    <div id="main">
+        <h1> Choose your level </h1>
+        <button class="level" id="easy"> 4X4 Field </button><br>
+        <button class="level" id="medium"> 5X5 Field </button><br>
+        <button class="level" id="hard"> 6X6 Field </button><br>
+    </div>
+    <div id="game">
+        <h2 id="time"></h2>
+        <h2 id="number"></h2>
+    </div>
+    <h2 id="caution"></h2>
+</body>
+
+
+</html>
