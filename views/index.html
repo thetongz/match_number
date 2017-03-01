@@ -22,6 +22,8 @@
                 if (game[this.id] == current) {
                     document.getElementById(game.indexOf(current)).value = 1
                     document.getElementById(game.indexOf(current)).innerHTML = current
+                    document.getElementById(game.indexOf(current)).style.backgroundColor = "black"
+                    document.getElementById(game.indexOf(current)).style.cursor = "default"
                     correct++
                     if (correct != game.length) {
                         randomNumber()
